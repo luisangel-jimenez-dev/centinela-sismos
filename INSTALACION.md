@@ -15,6 +15,42 @@ cómo comprobar que funciona. ⏱️ Si no tienes ninguno, calcula unos **20 a 3
 > ¿Ya tienes alguno? Sáltate a **[✅ Comprueba que todo funciona](#-comprueba-que-todo-funciona)**
 > y solo instala lo que te falte.
 
+## 🔒 Antes de instalar: reglas de seguridad
+
+En 2025 y 2026 hubo **ataques a la "cadena de suministro"**: delincuentes infectaron
+paquetes **legítimos** de npm (los "Shai-Hulud" / "ChainDrop", el más reciente en
+**octubre de 2026**). Con solo hacer `npm install` de un paquete infectado, el malware
+robaba contraseñas y tokens. Para protegerte:
+
+1. **Descarga SIEMPRE de la página oficial** (los links de esta guía). Nunca de sitios
+   de "descargas gratis" ni de links que te pasen por chat.
+2. **Instala la versión más reciente**, no una que ya tenías guardada. Las versiones
+   nuevas traen **parches de seguridad**. Si ya tenías un programa, **actualízalo**.
+3. **Node.js:** usa la versión **LTS** más reciente (v26 en noviembre de 2026). El proyecto
+   **no deja instalar** con versiones menores a v24.
+4. **No instales paquetes de npm que no conozcas**, aunque un tutorial lo diga. Antes,
+   búscalo en https://www.npmjs.com y revisa que sea popular y esté mantenido.
+5. **Usa `npm ci`** (no `npm install`) cuando solo quieras instalar lo del proyecto:
+   instala **exactamente** las versiones revisadas que están en `package-lock.json`.
+
+> 🛡️ **El proyecto ya viene protegido:** su archivo `.npmrc` evita que los paquetes
+> ejecuten scripts al instalarse (así se propagaban los gusanos), y el pipeline revisa
+> vulnerabilidades y **firmas** de los paquetes en cada cambio.
+
+### ¿Ya tenías los programas? Actualízalos
+
+**Windows (CMD):**
+```bat
+winget upgrade --id Git.Git -e
+winget upgrade --id OpenJS.NodeJS.LTS -e
+winget upgrade --id Hashicorp.Terraform -e
+winget upgrade --id Amazon.AWSCLI -e
+winget upgrade --id GitHub.cli -e
+```
+O descarga de nuevo el instalador desde la página oficial e instálalo encima.
+
+**Mac:** `brew update && brew upgrade git node awscli gh hashicorp/tap/terraform`
+
 ---
 
 ## 🪟 Windows
@@ -42,7 +78,7 @@ winget install --id Git.Git -e && winget install --id OpenJS.NodeJS.LTS -e && wi
 3. Comprueba en una CMD **nueva**: `git --version`
 
 #### 2. Node.js (trae npm)
-1. Descarga: https://nodejs.org. Elige el botón de la versión **LTS** (debe ser 22 o mayor).
+1. Descarga: https://nodejs.org. Elige el botón de la versión **LTS** (la recomendada; en noviembre de 2026 es la **v26**). Mínimo v24.
 2. Abre el instalador → **Next** en todo → **Install**.
    (Si te pregunta por "Tools for Native Modules", **no** hace falta marcarlo.)
 3. Comprueba: `node --version` y `npm --version`
@@ -103,8 +139,8 @@ Marca la casilla **"Agregar a PATH"** para poder abrir carpetas con `code .`
 ```bash
 sudo apt update && sudo apt install -y git curl unzip
 
-# Node.js 22 (LTS)
-curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+# Node.js LTS (v26)
+curl -fsSL https://deb.nodesource.com/setup_26.x | sudo -E bash -
 sudo apt install -y nodejs
 
 # Terraform
@@ -135,15 +171,15 @@ aws --version
 gh --version
 ```
 
-Debes ver algo parecido a esto (los números pueden ser más nuevos, no importa):
+Debes ver algo parecido a esto. Son las versiones de **noviembre de 2026**; si las tuyas son **más nuevas**, mejor:
 
 ```
-git version 2.47.0
-v22.11.0               ← debe empezar con v22 o mayor
-10.9.0
-Terraform v1.10.0      ← debe ser 1.10 o mayor
-aws-cli/2.22.0 ...     ← debe empezar con aws-cli/2
-gh version 2.63.0
+git version 2.56.0
+v26.13.0               ← v26 (recomendada) o mínimo v24
+11.20.0
+Terraform v1.17.1
+aws-cli/2.39.7 ...     ← debe empezar con aws-cli/2
+gh version 2.103.3
 ```
 
 🎉 **¡Si todos responden con un número, estás listo!**
@@ -172,7 +208,8 @@ Copia el código que aparece y pégalo en la página que se abre.
 | Problema | Solución |
 |---|---|
 | `"xxx" no se reconoce como un comando interno o externo` | **Cierra y vuelve a abrir la terminal.** Si sigue igual, reinicia la computadora. Si aun así no, reinstala ese programa. |
-| `node --version` dice v18, v20 o menor | Tienes una versión vieja: instala la **LTS** de https://nodejs.org encima |
+| `node --version` dice v22 o menor | Tienes una versión vieja: instala la **LTS** de https://nodejs.org encima |
+| `npm install` dice `Unsupported engine` o `EBADENGINE` | Tu Node es más viejo que v24: instala la **LTS** más reciente de https://nodejs.org |
 | `terraform` no se reconoce (instalación manual) | Revisa que `terraform.exe` esté en `C:\terraform` y que esa carpeta esté en el **Path** (paso 3 de Terraform) |
 | `aws --version` dice `aws-cli/1...` | Tienes la versión 1 (vieja). Instala la versión 2 con el `.msi` de arriba |
 | PowerShell dice que *la ejecución de scripts está deshabilitada* | Usa **CMD**, o en PowerShell corre una vez: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` |

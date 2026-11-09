@@ -12,6 +12,13 @@
 #   2. infraestructura  (IaC) terraform fmt / validate / plan / apply
 #   3. datos            (ETL) descarga sismos → S3 → limpia caché de CloudFront
 #   4. tablero          (CD)  compila React → lo publica en Amplify
+#
+#  🔒 Seguridad de la cadena de suministro:
+#   - Las acciones están fijadas a un commit exacto (SHA), no a una
+#     etiqueta como "v7" que alguien podría mover a código malicioso.
+#     El comentario "# v7.0.1" dice qué versión es.
+#   - npm ci + .npmrc: no se ejecutan scripts de instalación.
+#   - npm audit + npm audit signatures en cada cambio.
 # ============================================================
 
 name: Centinela CI/CD
@@ -51,16 +58,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Descargar el código
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false # no dejar el token de GitHub guardado
 
       - name: Instalar Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: 22
+          node-version: lts/*   # la versión LTS más reciente
+          check-latest: true    # siempre con el último parche de seguridad
           cache: npm
 
       - name: Instalar dependencias
-        run: npm ci
+        run: npm ci # usa el .npmrc: sin scripts de instalación
+
+      - name: Seguridad 1/2 (vulnerabilidades conocidas)
+        run: npm audit --audit-level=high
+
+      - name: Seguridad 2/2 (firmas de los paquetes)
+        run: npm audit signatures
 
       - name: Revisar estilo del código (lint)
         run: npm run lint
@@ -89,16 +105,18 @@ jobs:
       url_tablero: ${{ steps.salidas.outputs.url_tablero }}
     steps:
       - name: Descargar el código
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false # no dejar el token de GitHub guardado
 
       - name: Entrar a AWS (sin contraseñas, con OIDC)
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
         with:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Instalar Terraform
-        uses: hashicorp/setup-terraform@v3
+        uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
         with:
           terraform_wrapper: false
 
@@ -145,15 +163,18 @@ jobs:
       CDN_ID: ${{ needs.infraestructura.outputs.cdn_id }}
     steps:
       - name: Descargar el código
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false # no dejar el token de GitHub guardado
 
       - name: Instalar Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: 22
+          node-version: lts/*   # la versión LTS más reciente
+          check-latest: true    # siempre con el último parche de seguridad
 
       - name: Entrar a AWS (OIDC)
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
         with:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
@@ -188,12 +209,15 @@ jobs:
       APP_ID: ${{ needs.infraestructura.outputs.app_id }}
     steps:
       - name: Descargar el código
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false # no dejar el token de GitHub guardado
 
       - name: Instalar Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: 22
+          node-version: lts/*   # la versión LTS más reciente
+          check-latest: true    # siempre con el último parche de seguridad
           cache: npm
 
       - name: Instalar dependencias
@@ -208,7 +232,7 @@ jobs:
         run: cd dist && zip -r ../tablero.zip .
 
       - name: Entrar a AWS (OIDC)
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
         with:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}

@@ -21,8 +21,8 @@ como `https://main.d1abc2xyz.amplifyapp.com`, que **se actualiza solo cada hora*
 | Programa | Para qué | Cómo comprobar que ya lo tienes |
 |---|---|---|
 | [Git](https://git-scm.com/downloads) | Control de versiones | `git --version` |
-| [Node.js 22 o más](https://nodejs.org) (trae npm) | Correr JavaScript e instalar dependencias | `node --version` y `npm --version` |
-| [Terraform 1.10 o más](https://developer.hashicorp.com/terraform/install) | Infraestructura como código | `terraform version` |
+| [Node.js LTS más reciente](https://nodejs.org) (mínimo v24, trae npm) | Correr JavaScript e instalar dependencias | `node --version` y `npm --version` |
+| [Terraform (última versión)](https://developer.hashicorp.com/terraform/install) | Infraestructura como código | `terraform version` |
 | [AWS CLI v2](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) | Hablar con AWS desde la terminal | `aws --version` |
 | [GitHub CLI](https://cli.github.com) | Iniciar sesión en GitHub desde la terminal | `gh --version` |
 
@@ -67,7 +67,7 @@ Copia el código que te muestra y pégalo en el navegador que se abre.
 ```bash
 git clone https://github.com/TU-USUARIO/centinela-sismos.git
 cd centinela-sismos
-npm install
+npm ci          # instala las dependencias (versiones exactas y revisadas)
 npm run datos      # descarga sismos reales del SSN
 npm run dev        # abre http://localhost:5173
 ```

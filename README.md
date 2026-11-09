@@ -60,10 +60,10 @@ centinela-sismos/
 
 ## Probarlo en tu computadora
 
-Necesitas [Node.js 22+](https://nodejs.org) (ya trae npm).
+Necesitas [Node.js](https://nodejs.org) **LTS más reciente** (mínimo v24; ya trae npm).
 
 ```bash
-npm install         # instala las dependencias
+npm ci              # instala las dependencias (versiones exactas y revisadas)
 npm run datos       # descarga sismos reales → public/sismos.json
 npm run dev         # abre http://localhost:5173
 ```

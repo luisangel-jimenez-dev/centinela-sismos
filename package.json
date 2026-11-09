@@ -28,6 +28,6 @@
   },
   "description": "Centinela: tablero de monitoreo de sismos en México (práctica de CI/CD con GitHub Actions, Terraform, Amplify y CloudFront)",
   "engines": {
-    "node": ">=22"
+    "node": ">=24"
   }
 }
