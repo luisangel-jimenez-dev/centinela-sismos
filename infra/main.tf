@@ -58,18 +58,25 @@ data "aws_cloudfront_cache_policy" "optimizada" {
 }
 
 # CORS: permiso para que el tablero (que vive en otro dominio, Amplify)
-# pueda leer sismos.json. Agregamos el encabezado SIEMPRE, sin condiciones.
-# (La política administrada "Managed-SimpleCORS" no lo manda cuando el
-# navegador incluye el encabezado "priority", como hace Chrome.)
+# pueda leer sismos.json. Los datos son públicos, así que cualquier
+# página puede leerlos (*).
 resource "aws_cloudfront_response_headers_policy" "cors" {
   name    = "${local.nombre}-cors"
-  comment = "Permite que cualquier página lea los datos (son públicos)"
+  comment = "Permite que el tablero lea los datos"
 
-  custom_headers_config {
-    items {
-      header   = "Access-Control-Allow-Origin"
-      value    = "*"
-      override = true
+  cors_config {
+    access_control_allow_credentials = false
+    origin_override                  = true
+    access_control_max_age_sec       = 600
+
+    access_control_allow_origins {
+      items = ["*"]
+    }
+    access_control_allow_methods {
+      items = ["GET", "HEAD", "OPTIONS"]
+    }
+    access_control_allow_headers {
+      items = ["*"]
     }
   }
 }
