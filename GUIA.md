@@ -91,6 +91,16 @@ aws login
 
 Se abre el navegador, entras con tu cuenta de AWS y listo.
 
+> ⚠️ **¿Dice `Profile 'default' is already configured with Access Key credentials`?** Ya tenías
+> AWS configurado de antes. Inicia sesión en un perfil nuevo y dile a la terminal que lo use:
+> ```bash
+> aws login --profile centinela
+> export AWS_PROFILE=centinela        # 🪟 CMD: set AWS_PROFILE=centinela
+> ```
+> Repite la segunda línea **cada vez que abras una terminal nueva**.
+>
+> ⏰ La sesión dura unas horas. Si más tarde algo dice `session has expired`, vuelve a correr `aws login`.
+
 <details>
 <summary>¿No te funciona <code>aws login</code>, o Terraform dice que no encuentra credenciales? Usa llaves de acceso</summary>
 
