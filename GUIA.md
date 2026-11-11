@@ -315,7 +315,7 @@ terraform destroy                              # escribe "yes"
 | `InvalidClientTokenId` o `security token included in the request is invalid` (en tu compu) | Terraform está usando otra cuenta (una vieja o vencida), no la tuya | Si iniciaste sesión con `--profile`, en **esa misma terminal** corre `set AWS_PROFILE=tu-perfil` (CMD) o `export AWS_PROFILE=tu-perfil` (Mac/Linux). Si dice `session has expired`, repite `aws login` |
 | `BucketAlreadyExists` | Alguien en el mundo ya usa ese nombre de bucket | Cambia `alumno` por algo más único, ej: `juan-perez-2026` (en **todos** lados) |
 | `EntityAlreadyExists ... oidc-provider` | Tu cuenta ya tiene el proveedor OIDC de GitHub | En `bootstrap/terraform.tfvars` pon `crear_proveedor_oidc = false` y repite `terraform apply` |
-| `Not authorized to perform sts:AssumeRoleWithWebIdentity` | AWS no reconoce tu repo | Revisa que `github_repo` en el bootstrap sea **exactamente** `usuario/repo`, y que el ambiente se llame `produccion` |
+| `Not authorized to perform sts:AssumeRoleWithWebIdentity` | AWS no reconoce tu repo | Revisa que `github_repo` en el bootstrap sea **exactamente** `usuario/repo` (el de tu copia, no el de la plantilla), y que el ambiente se llame `produccion`. Si lo corriges, vuelve a hacer `terraform apply` en `bootstrap` |
 | `Could not load credentials` | Falta una variable en GitHub | Revisa las 3 variables del Paso 4.1 (nombres en MAYÚSCULAS) |
 | `terraform fmt -check` falla | El código de Terraform no está bien acomodado | Corre `terraform fmt -recursive` en tu compu y haz commit |
 | `npm ci` dice que `package.json` y `package-lock.json` "are not in sync" | Cambiaste `package.json` sin actualizar el lockfile | Corre `npm install` y sube `package-lock.json` |

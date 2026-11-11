@@ -37,6 +37,10 @@ locals {
   bucket_datos = "arn:aws:s3:::${local.nombre}-datos"
   github_oidc  = "token.actions.githubusercontent.com"
   cuenta       = data.aws_caller_identity.yo.account_id
+
+  # "usuario/repo" separado en sus dos partes
+  github_usuario = split("/", var.github_repo)[0]
+  github_nombre  = split("/", var.github_repo)[1]
 }
 
 # ------------------------------------------------------------
@@ -108,11 +112,20 @@ data "aws_iam_policy_document" "confianza" {
     condition {
       test     = "StringLike"
       variable = "${local.github_oidc}:sub"
-      values = [
-        "repo:${var.github_repo}:ref:refs/heads/main",
-        "repo:${var.github_repo}:pull_request",
-        "repo:${var.github_repo}:environment:produccion",
-      ]
+      # GitHub manda el repo en uno de dos formatos:
+      #   viejo: repo:usuario/repo:...
+      #   nuevo: repo:usuario@12345/repo@67890:...  (con números que no cambian)
+      # Aceptamos los dos, pero SOLO para tu usuario y tu repo.
+      values = flatten([
+        for prefijo in [
+          "repo:${local.github_usuario}/${local.github_nombre}",
+          "repo:${local.github_usuario}@*/${local.github_nombre}@*",
+          ] : [
+          "${prefijo}:ref:refs/heads/main",
+          "${prefijo}:pull_request",
+          "${prefijo}:environment:produccion",
+        ]
+      ])
     }
   }
 }
