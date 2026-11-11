@@ -51,15 +51,27 @@ resource "aws_cloudfront_origin_access_control" "oac" {
   signing_protocol                  = "sigv4"
 }
 
-# Políticas ya hechas por AWS (no hay que inventarlas):
-#  - CachingOptimized: guarda copias en caché
-#  - SimpleCORS: permite que el tablero (en otro dominio) lea los datos
+# Política de caché ya hecha por AWS (no hay que inventarla):
+# CachingOptimized guarda copias en caché.
 data "aws_cloudfront_cache_policy" "optimizada" {
   name = "Managed-CachingOptimized"
 }
 
-data "aws_cloudfront_response_headers_policy" "cors" {
-  name = "Managed-SimpleCORS"
+# CORS: permiso para que el tablero (que vive en otro dominio, Amplify)
+# pueda leer sismos.json. Agregamos el encabezado SIEMPRE, sin condiciones.
+# (La política administrada "Managed-SimpleCORS" no lo manda cuando el
+# navegador incluye el encabezado "priority", como hace Chrome.)
+resource "aws_cloudfront_response_headers_policy" "cors" {
+  name    = "${local.nombre}-cors"
+  comment = "Permite que cualquier página lea los datos (son públicos)"
+
+  custom_headers_config {
+    items {
+      header   = "Access-Control-Allow-Origin"
+      value    = "*"
+      override = true
+    }
+  }
 }
 
 resource "aws_cloudfront_distribution" "cdn" {
@@ -80,7 +92,7 @@ resource "aws_cloudfront_distribution" "cdn" {
     cached_methods             = ["GET", "HEAD"]
     compress                   = true
     cache_policy_id            = data.aws_cloudfront_cache_policy.optimizada.id
-    response_headers_policy_id = data.aws_cloudfront_response_headers_policy.cors.id
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.cors.id
   }
 
   restrictions {
